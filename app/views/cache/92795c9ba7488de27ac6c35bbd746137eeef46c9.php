@@ -8,7 +8,7 @@
 <body>
    
 
-   <?php $__env->startSection('eliminarUsuario'); ?>
+   <?php $__env->startSection('mostrarUsuarios'); ?>
 
    <h1>¿Estas seguro de eliminar el usuario?</h1>
 

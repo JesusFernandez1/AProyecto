@@ -23,11 +23,11 @@ function comprobar_fecha($date) {
 function comprobar_fecha_actual($date) {
 
     $fecha_entrada = strtotime(date($date));
-    $fecha_actual = strtotime(date('d-m-Y'));
+    $fecha_actual = strtotime(date('Y-m-d'));
 
-    if (($fecha_actual >= $fecha_entrada) || ($fecha_actual <= $fecha_entrada)) {
-        return false;
-    } else {
+    if (($fecha_actual != $fecha_entrada)) {
         return true;
+    } else {
+        return false;
     }
 }

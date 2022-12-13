@@ -23,8 +23,8 @@
 
     </div>
     <div class="col-md-3">
-      <label for="inputCity" class="form-label">Contraseña</label>
-      <input type="text" class="form-control" name="contraseña"><?php echo $error->ErrorFormateado("contraseña"); ?>
+      <label for="inputCity" class="form-label">Pass</label>
+      <input type="text" class="form-control" name="pass"><?php echo $error->ErrorFormateado("pass"); ?>
 
     </div>
     <div class="col-md-3">
@@ -35,7 +35,7 @@
     <div class="col-md-3">
       <label for="inputState" class="form-label">Tipo</label>
       <select id="inputState" class="form-select" name="tipo">
-        <option disabled selected></option>
+        <option disabled selected hidden>Operario</option>
         <option>Admin</option>
         <option>Operario</option>
       </select>

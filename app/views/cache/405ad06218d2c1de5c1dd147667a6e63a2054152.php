@@ -10,7 +10,7 @@
 <body>
 
 
-<?php $__env->startSection('mostrarUpdateUsuario'); ?>
+<?php $__env->startSection('mostrarUsuarios'); ?>
   <form action="" class="row g-3" method="POST">
   <?php $__currentLoopData = $usuarios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $usuario): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
     <div class="col-md-3">
@@ -24,8 +24,8 @@
 
     </div>
     <div class="col-2">
-      <label for="inputAddress2" class="form-label">Contraseña</label>
-      <input type="text" class="form-control" placeholder="Apartment, studio, or floor" name="contraseña" value="<?php echo e($usuario['contraseña']); ?>"><?php echo $error->ErrorFormateado("contraseña"); ?>
+      <label for="inputAddress2" class="form-label">Pass</label>
+      <input type="text" class="form-control" placeholder="Apartment, studio, or floor" name="pass" value="<?php echo e($usuario['pass']); ?>"><?php echo $error->ErrorFormateado("pass"); ?>
 
     </div>
     <div class="col-md-3">

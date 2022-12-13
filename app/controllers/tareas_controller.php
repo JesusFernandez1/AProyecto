@@ -29,11 +29,19 @@ function verPaginacion()
     require("app/models/tareas_model.php");
 
     $pagina = $_GET['pagina'];
+    $paginas = tareas_model::totalPaginas();
+
+    if ($pagina<=0) {
+        $pagina = 1;
+    }
+
+    if ($pagina>=$paginas) {
+        $pagina = $paginas;
+    }
 
     $tareas = tareas_model::get_Tareapaginada($pagina);
-    $paginas = tareas_model::totalPaginas();
     echo $blade->render('tareas_mostrar', [
-        'tareas' => $tareas, 'paginas' => $paginas
+        'tareas' => $tareas, 'paginas' => $paginas, 'pagina' => $pagina
     ]);
 }
 
@@ -62,12 +70,21 @@ function verPendientePaginacion()
     require("app/models/tareas_model.php");
 
     $pagina = $_GET['pagina'];
-
     $paginas = tareas_model::totalPaginasPendientes();
+
+    if ($pagina<=0) {
+        $pagina = 1;
+    }
+
+    if ($pagina>=$paginas) {
+        $pagina = $paginas;
+    }
+
+    
     $tareas = tareas_model::get_tareaPendiente($pagina);
 
     echo $blade->render('tareas_mostrar_pendientes', [
-        'tareas' => $tareas, 'paginas' => $paginas
+        'tareas' => $tareas, 'paginas' => $paginas, 'pagina' => $pagina
     ]);
 }
 
@@ -95,12 +112,57 @@ function verCompletaPaginacion()
     require("app/models/tareas_model.php");
 
     $pagina = $_GET['pagina'];
-
     $paginas = tareas_model::totalPaginas();
+
+    if ($pagina<=0) {
+        $pagina = 1;
+    }
+
+    if ($pagina>=$paginas) {
+        $pagina = $paginas;
+    }
+
+    
     $tareas = tareas_model::get_Tareapaginada($pagina);
     echo $blade->render('tareas_mostrar_completa', [
-        'tareas' => $tareas, 'paginas' => $paginas
+        'tareas' => $tareas, 'paginas' => $paginas, 'pagina' => $pagina
     ]);
+}
+
+
+/**
+ * filtrado
+ * Apartado donde comprobamos el filtrado
+ * @return void
+ */
+function filtrado()
+{
+    //Llamada al modelo
+    include('app/models/varios.php');
+    require("app/models/tareas_model.php");
+    require("app/models/GestorErrores.php");
+
+    $error = new GestorErrores('<span style="color: red;">', '</span>');
+
+    if ($_POST) {
+
+        $tareas = tareas_model::filtrar($_POST['nombre'], $_POST['estado'], $_POST['operario'], 1); //REVISAR ESTO JESUS POR FAVOH
+        if ($tareas) {
+            $paginas = tareas_model::totalPaginas();
+            echo $blade->render('tareas_mostrar', [
+                'tareas' => $tareas, 'paginas' => $paginas
+            ]);
+        } else {
+            $error->AnotaError('tarea', 'No se encontro ninguna tarea con dichos parametros');
+            echo $blade->render('buscador', [
+                'error' => $error
+            ]);
+        }
+    } else {
+        echo $blade->render('buscador', [
+            'error' => $error
+        ]);
+    }
 }
 
 /**
@@ -161,9 +223,10 @@ function ModificarUnaTarea()
     $tareaUnica = tareas_model::getOnetarea($id);
     $error = new GestorErrores('<span style="color: red;">', '</span>');
     $provincias = tareas_model::get_provincias();
+    $fecha_actual = date('d-m-Y');
     if ($_POST) {
 
-        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST, 'provincia'), filter_input(INPUT_POST, 'estado'), $_POST['inicio'], filter_input(INPUT_POST, 'operario'), $_POST['final']);
+        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST, 'provincia'), filter_input(INPUT_POST, 'estado'), $fecha_actual, filter_input(INPUT_POST, 'operario'), $_POST['final']);
 
         $data = "DNI='" . $_POST['identificacion'] . "', nombre='" . $_POST['nombre']  . "', apellido='" . $_POST['apellido']  . "', telefono='" . $_POST['telefono'] . "', descripcion='" . $_POST['descripcion']  . "', correo='" . $_POST['correo'] . "', direccion='" . $_POST['direccion'] . "', poblacion='" . $_POST['poblacion']
             . "', codigo_postal='" . $_POST['codigo'] . "', provincia='" . filter_input(INPUT_POST, 'provincia') . "', estado_tarea='" . filter_input(INPUT_POST, 'estado')  . "', fecha_creacion='" . $_POST['inicio']  . "', operario_id='" . filter_input(INPUT_POST, 'operario')  . "', fecha_final='" . $_POST['final']  . "', anotacion_inicio='" . $_POST['anterior']  . "', anotacion_final='" . $_POST['posterior'] . "'";
@@ -270,41 +333,6 @@ function delete()
 }
 
 /**
- * filtrado
- * Apartado donde comprobamos el filtrado
- * @return void
- */
-function filtrado()
-{
-    //Llamada al modelo
-    include('app/models/varios.php');
-    require("app/models/tareas_model.php");
-    require("app/models/GestorErrores.php");
-
-    $error = new GestorErrores('<span style="color: red;">', '</span>');
-
-    if ($_POST) {
-
-        $tareas = tareas_model::filtrar($_POST['nombre'], $_POST['estado'], $_POST['operario'], 1); //REVISAR ESTO JESUS POR FAVOH
-        if ($tareas) {
-            $paginas = tareas_model::totalPaginas();
-            echo $blade->render('tareas_mostrar', [
-                'tareas' => $tareas, 'paginas' => $paginas
-            ]);
-        } else {
-            $error->AnotaError('tarera', 'No se encontro ninguna tarea con dichos parametros');
-            echo $blade->render('buscador', [
-                '$error' => $error
-            ]);
-        }
-    } else {
-        echo $blade->render('buscador', [
-            '$error' => $error
-        ]);
-    }
-}
-
-/**
  * Filtrado base donde hacemos todas las comprobaciones necesarias para las tareas con el uso de expresiones regulares y demas metodos
  */
 function filtradoCadena($error, $identificacion, $nombre, $apellido, $telefono, $descripcion, $correo, $direccion, $poblacion, $codigo, $provincia, $estado, $inicio, $operario, $final)
@@ -369,7 +397,7 @@ function filtradoCadena($error, $identificacion, $nombre, $apellido, $telefono, 
     }
     if (!empty($final)) {
         if (comprobar_fecha($final, $inicio)) {
-            $error->AnotaError('final', 'No puede ser menor que la fecha actual');
+            $error->AnotaError('final', 'No puede ser menor/igual que la fecha actual');
         }
     }
     return $error;

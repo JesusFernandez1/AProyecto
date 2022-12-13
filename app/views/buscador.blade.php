@@ -22,6 +22,7 @@
         <input type="text" class="form-control form-control-dark" placeholder="Search..." name="operario">
         <input type="submit" class="btn btn-primary" value="Insert">
     </form>
+    <p>{!!$error->ErrorFormateado("tarea")!!}</p> <!-- si el usuario o pass son incorrectos, sale un mensaje de error -->
     @endsection
 </body>
 
