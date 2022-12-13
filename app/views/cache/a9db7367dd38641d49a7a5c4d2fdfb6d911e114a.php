@@ -37,14 +37,14 @@
                                         <label class="form-label" for="typeEmailX">Name</label>
                                     </div>
                                     <div class="form-outline form-white mb-4">
-                                        <input type="password" id="typePasswordX" class="form-control form-control-lg" name="contraseña"/>
+                                        <input type="password" id="typePasswordX" class="form-control form-control-lg" name="pass"/>
                                         <label class="form-label" for="typePasswordX">Password</label>
                                     </div>
                                     <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
                                     <input type="submit" class="btn btn-primary" value="Login">
                                 </div>
                                 <div>
-                                    <p><?php echo $error->ErrorFormateado("usuario"); ?></p> <!-- si el usuario o contraseña son incorrectos, sale un mensaje de error -->
+                                    <p><?php echo $error->ErrorFormateado("usuario"); ?></p> <!-- si el usuario o pass son incorrectos, sale un mensaje de error -->
                                 </div>
                             </div>
                         </div>

@@ -37,11 +37,26 @@
             <td><?php echo e($tarea['telefono']); ?></td>
             <td><?php echo e($tarea['estado_tarea']); ?></td>
             <td><a href="index.php?controller=tareas&action=ModificarUnaTarea&id=<?php echo e($tarea['tarea_id']); ?>" class="btn btn-outline-primary" role="button">Modificar</a> <a href="index.php?controller=tareas&action=verEliminar&id=<?php echo e($tarea['tarea_id']); ?>" class="btn btn-outline-danger" role="button">Eliminar</a>
-            <a href="index.php?controller=tareas&action=completar&id=<?php echo e($tarea['tarea_id']); ?>" class="btn btn-outline-success" role="button">Completar</a></td>
+               <a href="index.php?controller=tareas&action=completar&id=<?php echo e($tarea['tarea_id']); ?>" class="btn btn-outline-success" role="button">Completar</a>
+            </td>
          </tr>
          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </tbody>
    </table>
+   <style>
+      nav {
+         position: absolute;
+         left: -20;
+      }
+   </style>
+   <nav aria-label="Page navigation example">
+      <ul class="pagination">
+         <li class="page-item"><a class="page-link" href="">Anterior</a></li>
+         <?php for($i = 1; $i <= $paginas; $i++): ?> <li class="page-item"><a class="page-link" href="index.php?controller=tareas&action=verPaginacion&pagina=<?php echo e($i); ?>"><?php echo e($i); ?></a></li>
+            <?php endfor; ?>
+            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+      </ul>
+   </nav>
    <?php $__env->stopSection(); ?>
 </body>
 </html>

@@ -1,54 +1,40 @@
 <?php
 
-
 /**
  * ver
- * Funcion para mostrar la vista donde se cargan todas las tareas
+ * Funcion para mostrar la vista donde se cargan todas las tareas con una paginacion inicial
  * @return void
  */
-function ver() {
+function ver()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
-    $tareas = tareas_model::get_tarea();
+    $paginas = tareas_model::totalPaginas();
+    $tareas = tareas_model::get_Tareapaginada(1);
     echo $blade->render('tareas_mostrar', [
-        'tareas' => $tareas
+        'tareas' => $tareas, 'paginas' => $paginas
     ]);
 }
 
 /**
- * filtrado
- * Apartado donde comprobamos
+ * verPaginacion
+ * Tras mostrar por primera vez las tareas paginadas, usaremos este metodo para movernos entre las paginaciones
  * @return void
  */
-function filtrado() {
+function verPaginacion()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
-    require("app/models/GestorErrores.php");
 
-    $error = new GestorErrores('<span style="color: red;">', '</span>');
-    
-    if ($_POST) {
+    $pagina = $_GET['pagina'];
 
-        $tareas = tareas_model::filtrar($_POST['nombre'],$_POST['estado'],$_POST['operario']);
-        if (tareas_model::filtrar($_POST['nombre'],$_POST['estado'],$_POST['operario'])) {
-            echo $blade->render('tareas_mostrar', [
-                'tareas' => $tareas
-            ]);
-        } else {
-            $error->AnotaError('tarera', 'No se encontro ninguna tarea con dichos parametros');
-            echo $blade->render('buscador', [
-                '$error' => $error
-            ]);
-        }
-        
-    } else {
-        echo $blade->render('buscador', [
-            '$error' => $error
-        ]);
-    }
-    
+    $tareas = tareas_model::get_Tareapaginada($pagina);
+    $paginas = tareas_model::totalPaginas();
+    echo $blade->render('tareas_mostrar', [
+        'tareas' => $tareas, 'paginas' => $paginas
+    ]);
 }
 
 /**
@@ -56,14 +42,32 @@ function filtrado() {
  * Funcion para ver todas las tareas pendientes
  * @return void
  */
-function verPendiente() {
+function verPendiente()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
-    $tareas = tareas_model::get_tareaPendiente();
+    $paginas = tareas_model::totalPaginasPendientes();
+    $tareas = tareas_model::get_tareaPendiente(1);
 
-    echo $blade->render('tareas_mostrar', [
-        'tareas' => $tareas
+    echo $blade->render('tareas_mostrar_pendientes', [
+        'tareas' => $tareas, 'paginas' => $paginas
+    ]);
+}
+
+function verPendientePaginacion()
+{
+    //Llamada al modelo
+    include('app/models/varios.php');
+    require("app/models/tareas_model.php");
+
+    $pagina = $_GET['pagina'];
+
+    $paginas = tareas_model::totalPaginasPendientes();
+    $tareas = tareas_model::get_tareaPendiente($pagina);
+
+    echo $blade->render('tareas_mostrar_pendientes', [
+        'tareas' => $tareas, 'paginas' => $paginas
     ]);
 }
 
@@ -72,29 +76,30 @@ function verPendiente() {
  * Funcion para ver todos los detalles de todas las tareas
  * @return void
  */
-function verCompleta() {
+function verCompleta()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
-    $tareas = tareas_model::get_tarea();
+    $paginas = tareas_model::totalPaginas();
+    $tareas = tareas_model::get_Tareapaginada(1);
     echo $blade->render('tareas_mostrar_completa', [
-        'tareas' => $tareas
+        'tareas' => $tareas, 'paginas' => $paginas
     ]);
 }
 
-/**
- * verEliminar
- * Funcion que nos muestra una vista donde esta la tarea seleccionada a eliminar para confirmar si quiere borrarla o no
- * @return void
- */
-function verEliminar() {
+function verCompletaPaginacion()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
-    $id = $_GET['id'];
-    $tareaUnica = tareas_model::getOnetarea($id);
-    echo $blade->render('tareas_eliminar', [
-        'tareas' => $tareaUnica
+
+    $pagina = $_GET['pagina'];
+
+    $paginas = tareas_model::totalPaginas();
+    $tareas = tareas_model::get_Tareapaginada($pagina);
+    echo $blade->render('tareas_mostrar_completa', [
+        'tareas' => $tareas, 'paginas' => $paginas
     ]);
 }
 
@@ -103,7 +108,8 @@ function verEliminar() {
  * Funcion para crear una nueva tarea pasando esta por un filtrado previo que debera pasar para poder añadirla
  * @return void
  */
-function crear() {
+function crear()
+{
 
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
@@ -115,16 +121,17 @@ function crear() {
 
     if ($_POST) {
 
-        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST,'provincia'), filter_input(INPUT_POST,'estado'), $_POST['inicio'], filter_input(INPUT_POST,'operario'), $_POST['final']);
+        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST, 'provincia'), filter_input(INPUT_POST, 'estado'), $_POST['inicio'], filter_input(INPUT_POST, 'operario'), $_POST['final']);
 
         $data = "'" . $_POST['identificacion'] . "','" . $_POST['nombre'] . "','" . $_POST['apellido'] . "','" . $_POST['telefono'] . "','" . $_POST['descripcion'] . "','" . $_POST['correo'] . "','" . $_POST['direccion'] . "','"
-            . $_POST['poblacion'] . "','" . $_POST['codigo'] . "','" . filter_input(INPUT_POST,'provincia') . "','" . filter_input(INPUT_POST,'estado') . "','" . $_POST['inicio'] . "','" . filter_input(INPUT_POST,'operario') . "','" . $_POST['final'] . "','" . $_POST['anterior'] . "','" . $_POST['posterior'] . "'";
+            . $_POST['poblacion'] . "','" . $_POST['codigo'] . "','" . filter_input(INPUT_POST, 'provincia') . "','" . filter_input(INPUT_POST, 'estado') . "','" . $_POST['inicio'] . "','" . filter_input(INPUT_POST, 'operario') . "','" . $_POST['final'] . "','" . $_POST['anterior'] . "','" . $_POST['posterior'] . "'";
 
         if (!$error->HayErrores()) {
             tareas_model::insert_tarea($data);
-            $tareas = tareas_model::get_tarea();
+            $paginas = tareas_model::totalPaginas();
+            $tareas = tareas_model::get_Tareapaginada(1);
             echo $blade->render('tareas_mostrar', [
-                'tareas' => $tareas
+                'tareas' => $tareas, 'paginas' => $paginas
             ]);
         } else {
             echo $blade->render('tareas_añadir', [
@@ -143,7 +150,8 @@ function crear() {
  * Funcion para poder modificar cualquier dato de la tarea seleccionada obteneida a traves de una id y pasando por un filtro
  * @return void
  */
-function ModificarUnaTarea() {
+function ModificarUnaTarea()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
@@ -155,17 +163,18 @@ function ModificarUnaTarea() {
     $provincias = tareas_model::get_provincias();
     if ($_POST) {
 
-        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST,'provincia'), filter_input(INPUT_POST,'estado'), $_POST['inicio'], filter_input(INPUT_POST,'operario'), $_POST['final']);
+        $error = filtradoCadena($error, $_POST['identificacion'], $_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['descripcion'], $_POST['correo'], $_POST['direccion'], $_POST['poblacion'], $_POST['codigo'], filter_input(INPUT_POST, 'provincia'), filter_input(INPUT_POST, 'estado'), $_POST['inicio'], filter_input(INPUT_POST, 'operario'), $_POST['final']);
 
         $data = "DNI='" . $_POST['identificacion'] . "', nombre='" . $_POST['nombre']  . "', apellido='" . $_POST['apellido']  . "', telefono='" . $_POST['telefono'] . "', descripcion='" . $_POST['descripcion']  . "', correo='" . $_POST['correo'] . "', direccion='" . $_POST['direccion'] . "', poblacion='" . $_POST['poblacion']
-            . "', codigo_postal='" . $_POST['codigo'] . "', provincia='" . filter_input(INPUT_POST,'provincia') . "', estado_tarea='" . filter_input(INPUT_POST,'estado')  . "', fecha_creacion='" . $_POST['inicio']  . "', operario_id='" . filter_input(INPUT_POST,'operario')  . "', fecha_final='" . $_POST['final']  . "', anotacion_inicio='" . $_POST['anterior']  . "', anotacion_final='" . $_POST['posterior'] . "'";
+            . "', codigo_postal='" . $_POST['codigo'] . "', provincia='" . filter_input(INPUT_POST, 'provincia') . "', estado_tarea='" . filter_input(INPUT_POST, 'estado')  . "', fecha_creacion='" . $_POST['inicio']  . "', operario_id='" . filter_input(INPUT_POST, 'operario')  . "', fecha_final='" . $_POST['final']  . "', anotacion_inicio='" . $_POST['anterior']  . "', anotacion_final='" . $_POST['posterior'] . "'";
 
         if (!$error->HayErrores()) {
-            
-            tareas_model::update_tarea($data,$id);
-            $tareas = tareas_model::get_tarea();
+
+            tareas_model::update_tarea($data, $id);
+            $paginas = tareas_model::totalPaginas();
+            $tareas = tareas_model::get_Tareapaginada(1);
             echo $blade->render('tareas_mostrar', [
-                'tareas' => $tareas
+                'tareas' => $tareas, 'paginas' => $paginas
             ]);
         } else {
             echo $blade->render('tareas_modificar', [
@@ -177,7 +186,6 @@ function ModificarUnaTarea() {
             'tareas' => $tareaUnica, 'provincias' => $provincias, 'error' => $error
         ]);
     }
-    
 }
 
 /**
@@ -185,30 +193,61 @@ function ModificarUnaTarea() {
  * Funcion para que los operarios puedan modificar la tarea de forma que este completada
  * @return void
  */
-function completar() {
+function completar()
+{
     //Llamada al modelo
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
+    require("app/models/GestorErrores.php");
+
+    $error = new GestorErrores('<span style="color: red;">', '</span>');
+
     $id = $_GET['id'];
     $tareaUnica = tareas_model::getOnetarea($id);
 
     if ($_POST) {
 
-            $estado = filter_input(INPUT_POST,'estado');
+        if (!empty($_POST['final'])) {
+
+            $estado = filter_input(INPUT_POST, 'estado');
             $anterior = $_POST['anterior'];
             $posterior = $_POST['posterior'];
-            
-            tareas_model::completar_tarea($estado,$anterior,$posterior,$id);
-            $tareas = tareas_model::get_tarea();
+            $final = $_POST['final'];
+
+            tareas_model::completar_tarea($estado, $anterior, $posterior, $final, $id);
+            $paginas = tareas_model::totalPaginas();
+            $tareas = tareas_model::get_Tareapaginada(1);
             echo $blade->render('tareas_mostrar', [
-                'tareas' => $tareas
+                'tareas' => $tareas, 'paginas' => $paginas
             ]);
         } else {
+            $error->AnotaError('fecha_final', 'La fecha final no puede estar vacia');
+            echo $blade->render('tareas_completar', [
+                'error' => $error, 'tareas' => $tareaUnica
+            ]);
+        }
+    } else {
         echo $blade->render('tareas_completar', [
-            'tareas' => $tareaUnica
+            'tareas' => $tareaUnica, 'error' => $error
         ]);
     }
+}
 
+/**
+ * verEliminar
+ * Funcion que nos muestra una vista donde esta la tarea seleccionada a eliminar para confirmar si quiere borrarla o no
+ * @return void
+ */
+function verEliminar()
+{
+    //Llamada al modelo
+    include('app/models/varios.php');
+    require("app/models/tareas_model.php");
+    $id = $_GET['id'];
+    $tareaUnica = tareas_model::getOnetarea($id);
+    echo $blade->render('tareas_eliminar', [
+        'tareas' => $tareaUnica
+    ]);
 }
 
 /**
@@ -216,22 +255,60 @@ function completar() {
  * Funcion donde tras confirmar que si quiere borrar una tarea, la eliminamos
  * @return void
  */
-function delete() {
+function delete()
+{
     //Llamada al modelo
     $id = $_GET['id'];
     include('app/models/varios.php');
     require("app/models/tareas_model.php");
     tareas_model::delete_tarea($id);
-    $tareas = tareas_model::get_tarea();
+    $paginas = tareas_model::totalPaginas();
+    $tareas = tareas_model::get_Tareapaginada(1);
     echo $blade->render('tareas_mostrar', [
-        'tareas' => $tareas
+        'tareas' => $tareas, 'paginas' => $paginas
     ]);
+}
+
+/**
+ * filtrado
+ * Apartado donde comprobamos el filtrado
+ * @return void
+ */
+function filtrado()
+{
+    //Llamada al modelo
+    include('app/models/varios.php');
+    require("app/models/tareas_model.php");
+    require("app/models/GestorErrores.php");
+
+    $error = new GestorErrores('<span style="color: red;">', '</span>');
+
+    if ($_POST) {
+
+        $tareas = tareas_model::filtrar($_POST['nombre'], $_POST['estado'], $_POST['operario'], 1); //REVISAR ESTO JESUS POR FAVOH
+        if ($tareas) {
+            $paginas = tareas_model::totalPaginas();
+            echo $blade->render('tareas_mostrar', [
+                'tareas' => $tareas, 'paginas' => $paginas
+            ]);
+        } else {
+            $error->AnotaError('tarera', 'No se encontro ninguna tarea con dichos parametros');
+            echo $blade->render('buscador', [
+                '$error' => $error
+            ]);
+        }
+    } else {
+        echo $blade->render('buscador', [
+            '$error' => $error
+        ]);
+    }
 }
 
 /**
  * Filtrado base donde hacemos todas las comprobaciones necesarias para las tareas con el uso de expresiones regulares y demas metodos
  */
-function filtradoCadena($error, $identificacion, $nombre, $apellido, $telefono, $descripcion, $correo, $direccion, $poblacion, $codigo, $provincia, $estado, $inicio, $operario, $final) {
+function filtradoCadena($error, $identificacion, $nombre, $apellido, $telefono, $descripcion, $correo, $direccion, $poblacion, $codigo, $provincia, $estado, $inicio, $operario, $final)
+{
     include("app/libreria/Util-ValidarCodigo.php");
     include("app/libreria/Util-ValidarNombre.php");
     include("app/libreria/Util-FechaValida.php");
@@ -256,7 +333,7 @@ function filtradoCadena($error, $identificacion, $nombre, $apellido, $telefono, 
     }
     if (empty($telefono)) {
         $error->AnotaError('telefono', 'No has introducido un telefono');
-    } 
+    }
     if (empty($descripcion)) {
         $error->AnotaError('descripcion', 'No has introducido una descripcion');
     }

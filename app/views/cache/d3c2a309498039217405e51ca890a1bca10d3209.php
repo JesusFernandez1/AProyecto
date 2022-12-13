@@ -60,7 +60,7 @@
     <div class="col-md-2">
       <label for="inputState" class="form-label">Provincia</label>
       <select id="inputState" class="form-select" name="provincia">
-        <option disabled selected></option>
+        <option disabled selected hidden>Provincia</option>
         <?php $__currentLoopData = $provincias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $provincia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <option><?php echo e($provincia["nombre"]); ?></option>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -71,7 +71,7 @@
     <div class="col-md-3">
       <label for="inputState" class="form-label">Estado</label>
       <select id="inputState" class="form-select" name="estado">
-        <option disabled selected></option>
+        <option disabled selected hidden>Estado tarea</option>
         <option>P</option>
         <option>R</option>
         <option>C</option>
@@ -88,7 +88,7 @@
     <div class="col-md-2">
       <label for="inputState" class="form-label">Operarios</label>
       <select id="inputState" class="form-select" name="operario">
-        <option disabled selected></option>
+        <option disabled selected hidden>Operario</option>
         <option>1</option>
         <option>2</option>
         <option>3</option>

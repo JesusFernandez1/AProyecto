@@ -9,16 +9,21 @@
     <title>Document</title>
 </head>
 <!-- vista donde ponemos los buscadores para encontrar una tarea con una serie de filtros -->
+
 <body>
     
     <?php $__env->startSection('mostrarExtension'); ?>
     <form action="" method="POST">
+        <label for="inputState" class="form-label">Nombre:</label>
         <input type="text" class="form-control form-control-dark" placeholder="Search..." name="nombre">
+        <label for="inputState" class="form-label">Estado:</label>
         <input type="text" class="form-control form-control-dark" placeholder="Search..." name="estado">
+        <label for="inputState" class="form-label">Operario:</label>
         <input type="text" class="form-control form-control-dark" placeholder="Search..." name="operario">
         <input type="submit" class="btn btn-primary" value="Insert">
     </form>
     <?php $__env->stopSection(); ?>
 </body>
+
 </html>
 <?php echo $__env->make('base', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\2DAW\CursoPHP\AProyecto\app\views/buscador.blade.php ENDPATH**/ ?>

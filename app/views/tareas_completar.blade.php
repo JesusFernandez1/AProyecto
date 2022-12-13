@@ -76,7 +76,7 @@
     </div>
     <div class="col-md-1">
       <label for="inputCity" class="form-label">Fecha de finalizacion</label>
-      <input readonly type="date" class="form-control" id="inputCity" name="final" value="{{$tarea['fecha_final']}}">
+      <input type="date" class="form-control" id="inputCity" name="final" value="{{$tarea['fecha_final']}}">{!!$error->ErrorFormateado("fecha_final")!!}
     </div>
     <div class="col-md-4">
       <label for="inputCity" class="form-label">Anotacion inicio</label>

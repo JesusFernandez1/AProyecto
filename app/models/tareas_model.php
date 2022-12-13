@@ -2,21 +2,28 @@
 require_once("Conectar.php"); 
 class tareas_model {
     
-    /**
-     * get_tarea
-     * Consulta donde obtenemos todas las tareas para poder mostrarlas u otras acciones
-     * @return void
-     */
-    public static function get_tarea(){
 
-        $query = Database::getInstance()->db->query("SELECT * FROM tareas ORDER BY fecha_creacion DESC");
+    public static function get_Tareapaginada($pagina)
+    {
+        $tareas_paginas = 3;
+        $desde = ($pagina-1) * $tareas_paginas;
+        $query = Database::getInstance()->db->query("SELECT * FROM tareas ORDER BY fecha_creacion DESC LIMIT $desde,$tareas_paginas");
         $tareas = array();
         while($tarea = $query->fetch()){
             $tareas[] = $tarea;
         }
         return $tareas;
     }
-    
+
+    public static function totalPaginas()
+    {
+        $query = Database::getInstance()->db->query("SELECT * FROM tareas ORDER BY fecha_creacion DESC");
+        $tareas_paginas = 3;
+
+        $paginas = ceil($query->rowCount()/$tareas_paginas);
+        
+        return $paginas;
+    }
     /**
      * get_provincias
      * Consulta donde obtengo todas las provincias y asi poder generarlas en los apartados donde se requiera la provincia
@@ -72,23 +79,39 @@ class tareas_model {
      * @param  mixed $operario
      * @return void
      */
-    public static function filtrar($nombre, $estado, $operario){
+    public static function filtrar($nombre, $estado, $operario, $pagina){
 
-        $query = Database::getInstance()->db->query("SELECT * FROM tareas WHERE nombre = '$nombre' OR estado_tarea = '$estado' OR operario_id = '$operario'");
+        $tareas_paginas = 3;
+        $desde = ($pagina-1) * $tareas_paginas;
+        $query = Database::getInstance()->db->query("SELECT * FROM tareas WHERE nombre = '$nombre' OR estado_tarea = '$estado' OR operario_id = '$operario' LIMIT $desde,$tareas_paginas");
         $tareas = array();
         while($tarea = $query->fetch()){
             $tareas[] = $tarea;
         }
         return $tareas;
-    }    
+    }
+
+    public static function totalPaginasPendientes()
+    {
+        $query = Database::getInstance()->db->prepare("SELECT * FROM tareas WHERE estado_tarea = ? ORDER BY fecha_creacion DESC");
+        $query->setFetchMode(PDO::FETCH_ASSOC);
+        $query->execute(array("P"));
+        $tareas_paginas = 3;
+
+        $paginas = ceil($query->rowCount()/$tareas_paginas);
+        
+        return $paginas;
+    }
     /**
      * get_tareaPendiente
      * Consulta para obtener todas las tareas pendientes
      * @return void
      */
-    public static function get_tareaPendiente(){
+    public static function get_tareaPendiente($pagina){
 
-        $query = Database::getInstance()->db->prepare("SELECT * FROM tareas WHERE estado_tarea = ? ORDER BY fecha_creacion DESC");
+        $tareas_paginas = 3;
+        $desde = ($pagina-1) * $tareas_paginas;
+        $query = Database::getInstance()->db->prepare("SELECT * FROM tareas WHERE estado_tarea = ? ORDER BY fecha_creacion DESC LIMIT $desde,$tareas_paginas");
         $query->setFetchMode(PDO::FETCH_ASSOC);
         $query->execute(array("P"));
         $tareas = array();
@@ -96,6 +119,7 @@ class tareas_model {
             $tareas[] = $tarea;
         }
         return $tareas;
+
     }    
     /**
      * insert_tarea
@@ -129,9 +153,9 @@ class tareas_model {
         }
     }
     
-    public static function completar_tarea($estado, $anterior, $posterior, $tarea_id){
+    public static function completar_tarea($estado, $anterior, $posterior, $final, $tarea_id){
 
-        $query = Database::getInstance()->db->query("UPDATE tareas SET estado_tarea = '$estado', anotacion_inicio = '$anterior', anotacion_final = '$posterior' WHERE tarea_id = '$tarea_id'");
+        $query = Database::getInstance()->db->query("UPDATE tareas SET estado_tarea = '$estado', anotacion_inicio = '$anterior', anotacion_final = '$posterior', fecha_final = '$final' WHERE tarea_id = '$tarea_id'");
         if ($query) {
             return true;
         } else {

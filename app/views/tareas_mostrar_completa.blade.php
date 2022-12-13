@@ -59,6 +59,20 @@
          @endforeach
       </tbody>
    </table>
+   <style>
+      nav {
+         position: absolute;
+         left: -20;
+      }
+   </style>
+   <nav aria-label="Page navigation example">
+      <ul class="pagination">
+         <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+         @for ($i = 1; $i <= $paginas; $i++) <li class="page-item"><a class="page-link" href="index.php?controller=tareas&action=verCompletaPaginacion&pagina={{$i}}">{{$i}}</a></li>
+            @endfor
+            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+      </ul>
+   </nav>
    @endsection
 </body>
 </html>
